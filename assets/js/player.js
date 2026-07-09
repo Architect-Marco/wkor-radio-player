@@ -1,4 +1,3 @@
-
 // Get page elements
 const audioEl = document.getElementById('mainAudio');
 const coverArt = document.getElementById('coverArt');
@@ -8,7 +7,7 @@ const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 
-// ✅ EXACT FILES FROM YOUR FOLDER
+// ✅ UPDATED PATHS — matches your exact folder layout
 const playlist = [
     {
         title: "0 - THE SICK TEAM MINI ALUM MIX",
