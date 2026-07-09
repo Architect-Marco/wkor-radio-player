@@ -1,1 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WKOR FM Radio 108.8 | Sovereign Broadcast v6.3</title>
+    <!-- Tailwind CSS via CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        noir: '#08080d',
+                        deepNoir: '#000000',
+                        neonPink: '#ff2eb6',
+                        whiteBezel: '#ffffff'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            /* 1.8px White Bezel */
+            .bezel { border: 1.8px solid #ffffff; }
+            /* Neon Visualizer Bars */
+            .viz-bar {
+                box-shadow: 0 0 8px #ff2eb6, 0 0 12px rgba(255, 46, 182, 0.4);
+                transition: height 0.1s ease;
+            }
+            /* Haptic Control Wheel Feedback */
+            .haptic {
+                transition: transform 0.15s ease-out;
+            }
+            .haptic:active {
+                transform: scale(0.92);
+            }
+        }
+    </style>
+</head>
+<body class="bg-noir text-white min-h-screen flex flex-col items-center justify-center p-4">
 
+    <!-- Main Player Frame -->
+    <div class="w-full max-w-sm aspect-[9/16] bezel rounded-xl bg-deepNoir relative overflow-hidden shadow-2xl">
+
+        <!-- 145px Snatched Video Screen -->
+        <div class="h-[145px] w-full bg-gray-900">
+            <video id="mainMedia" class="w-full h-full object-cover" muted playsinline preload="auto">
+                <source src="assets/media/intro.mp4" type="video/mp4">
+                Your browser does not support HTML5 video.
+            </video>
+        </div>
+
+        <!-- 12-Line Pink Neon Visualizer -->
+        <div class="h-24 flex justify-center items-center gap-1.5 mt-4">
+            <div id="visualizer" class="flex gap-1.5 items-end"></div>
+        </div>
+
+        <!-- Track Info Display -->
+        <div class="px-5 py-3 text-center">
+            <h2 id="trackTitle" class="text-base font-semibold tracking-wide">CDFM 108.8</h2>
+            <p class="text-xs text-gray-400 mt-1">Sovereign Broadcast Network v6.3</p>
+        </div>
+
+        <!-- Haptic Control Wheel -->
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 w-28 h-28 rounded-full border-2 border-neonPink flex items-center justify-center haptic">
+            <button id="playBtn" class="w-20 h-20 rounded-full bg-neonPink text-black font-bold text-lg tracking-wider">
+                PLAY
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Link to Player Logic -->
+    <script src="assets/js/player.js"></script>
+</body>
+</html>
