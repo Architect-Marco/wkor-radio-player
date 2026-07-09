@@ -7,7 +7,7 @@ const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 
-// ✅ PATHS UPDATED: points to your existing /media/ folder
+// ✅ EXACT paths matching your media folder
 const playlist = [
     {
         title: "0 - THE SICK TEAM MINI ALUM MIX",
@@ -97,7 +97,7 @@ playBtn.addEventListener('click', async () => {
         audioEl.pause();
         playBtn.textContent = "PLAY";
     } else {
-        audioEl.play();
+        audioEl.play().catch(err => console.log("Play error:", err));
         playBtn.textContent = "PAUSE";
     }
     isPlaying = !isPlaying;
@@ -106,13 +106,13 @@ playBtn.addEventListener('click', async () => {
 prevBtn.addEventListener('click', () => {
     currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
     loadTrack(currentTrack);
-    if (isPlaying) audioEl.play();
+    if (isPlaying) audioEl.play().catch(err => {});
 });
 
 nextBtn.addEventListener('click', () => {
     currentTrack = (currentTrack + 1) % playlist.length;
     loadTrack(currentTrack);
-    if (isPlaying) audioEl.play();
+    if (isPlaying) audioEl.play().catch(err => {});
 });
 
 audioEl.addEventListener('ended', () => {
@@ -135,7 +135,7 @@ function drawVisualizer() {
     if (!analyser) return;
     analyser.getByteFrequencyData(dataArray);
     const bars = visualizer.children;
-    for (let i = 0; i < 12; i++) {
+    for (let i = 0; i < bars.length; i++) {
         const height = Math.max(10, dataArray[i] * 0.7);
         bars[i].style.height = `${height}px`;
     }
