@@ -51,32 +51,20 @@
     </style>
 </head>
 <body class="bg-noir text-white min-h-screen flex flex-col items-center justify-center p-4">
-    
-    <!-- Main Sovereign Player -->
     <div class="w-full max-w-sm aspect-[9/16] bezel rounded-xl bg-deepNoir relative overflow-hidden shadow-2xl flex flex-col">
-        
-        <!-- Tactical Side Markers -->
         <div class="side-marker left-0"></div>
         <div class="side-marker right-0"></div>
-
-        <!-- Cover Art Container (Locked at 400px) -->
         <div class="h-[400px] w-full bg-gray-900 relative overflow-hidden">
             <img id="coverArt" alt="Album Cover" class="w-full h-full object-cover img-mask">
             <audio id="mainAudio" preload="auto" playsinline crossorigin="anonymous"></audio>
         </div>
-
-        <!-- Waveform Visualizer & Metadata Section -->
         <div class="flex-1 flex flex-col items-center justify-center gap-4 px-4 -mt-2">
-            <!-- 24 LED Bars -->
             <div id="visualizer" class="flex items-end justify-center h-[35px] mb-2"></div>
-            
             <div class="text-center">
                 <h2 id="trackTitle" class="text-[14px] font-bold tracking-widest leading-tight uppercase px-2">WKOR FM • NOIR SECTOR</h2>
                 <p class="text-[9px] text-neonPink tracking-[0.3em] mt-2 opacity-90 uppercase">Sovereign Audio Interface v1.3</p>
             </div>
         </div>
-
-        <!-- Industrial Controls -->
         <div class="mb-8 flex justify-center items-center gap-8">
             <button id="prevBtn" class="text-white text-2xl hover:text-neonPink transition-colors haptic">◀</button>
             <div class="w-24 h-24 rounded-full border-2 border-neonPink flex items-center justify-center haptic shadow-[0_0_25px_rgba(255,46,182,0.4)]">
@@ -85,7 +73,6 @@
             <button id="nextBtn" class="text-white text-2xl hover:text-neonPink transition-colors haptic">▶</button>
         </div>
     </div>
-
     <script>
         const audioEl = document.getElementById('mainAudio');
         const coverArt = document.getElementById('coverArt');
@@ -94,7 +81,6 @@
         const playBtn = document.getElementById('playBtn');
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
-
         const playlist = [
             { title: "0 - THE SICK TEAM MINI ALBUM MIX", src: "assets/media/0 - THE SICK TEAM MINI ALUM MIX - intro.mp3", cover: "assets/media/0 - THE SICK TEAM MINI ALUM MIX - cover art.png" },
             { title: "1 - I CAN'T LET THIS FEELING GO", src: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Original Mix).mp3", cover: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Cover Art).png" },
@@ -109,17 +95,13 @@
             { title: "10 - REACH OUT - Version 1", src: "assets/media/10 - REACH OUT - THE SICK TEAM FT LEXI CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
             { title: "11 - REACH OUT - Version 2", src: "assets/media/11 - REACH OUT - THE SICK TEAM FT LEXI CON 2.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" }
         ];
-
         let currentTrack = 0, isPlaying = false, audioCtx, analyser, dataArray;
-
-        // Initialize 24 LED bars
         for (let i = 0; i < 24; i++) {
             const bar = document.createElement('div');
             bar.className = "viz-bar";
             bar.style.height = "4px";
             visualizer.appendChild(bar);
         }
-
         function loadTrack(index) {
             const track = playlist[index];
             audioEl.src = track.src;
@@ -127,7 +109,6 @@
             coverArt.src = track.cover;
             audioEl.load();
         }
-
         playBtn.addEventListener('click', async () => {
             if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
             if (audioCtx.state === 'suspended') await audioCtx.resume();
@@ -135,7 +116,6 @@
                 const source = audioCtx.createMediaElementSource(audioEl);
                 analyser = audioCtx.createAnalyser();
                 analyser.fftSize = 128;
-                // SMOOTHING: 0.82 for liquid waveform movement
                 analyser.smoothingTimeConstant = 0.82; 
                 dataArray = new Uint8Array(analyser.frequencyBinCount);
                 source.connect(analyser); analyser.connect(audioCtx.destination); drawVisualizer();
@@ -149,42 +129,29 @@
             }
             isPlaying = !isPlaying;
         });
-
         prevBtn.addEventListener('click', () => {
             currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
             loadTrack(currentTrack);
             if (isPlaying) audioEl.play().catch(() => {});
         });
-
         nextBtn.addEventListener('click', () => {
             currentTrack = (currentTrack + 1) % playlist.length;
             loadTrack(currentTrack);
             if (isPlaying) audioEl.play().catch(() => {});
         });
-
         audioEl.addEventListener('ended', () => nextBtn.click());
-
-        // RECALIBRATED WAVEFORM DRAW LOGIC
         function drawVisualizer() {
             requestAnimationFrame(drawVisualizer);
-            if (!analyser || !isPlaying) {
-                // Return bars to idle height if paused
-                if(!isPlaying) {
-                    const bars = visualizer.children;
-                    for(let i=0; i<bars.length; i++) bars[i].style.height = "4px";
-                }
-                return;
-            }
+            if (!analyser) return;
             analyser.getByteFrequencyData(dataArray);
             const bars = visualizer.children;
             for (let i = 0; i < bars.length; i++) {
-                // Math: dataArray value (0-255) * lower multiplier (0.12) + 4px base
                 let height = 4 + (dataArray[i] * 0.12);
-                if (height > 35) height = 35; // Ceiling
+                if (height > 35) height = 35;
+                if (!isPlaying) height = 4;
                 bars[i].style.height = `${height}px`;
             }
         }
-
         loadTrack(0);
     </script>
 </body>
