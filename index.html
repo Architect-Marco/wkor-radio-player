@@ -25,9 +25,14 @@
     <style type="text/tailwindcss">
         @layer utilities {
             .bezel { border: 1.8px solid #ffffff; }
+            /* LED bars: thinner, shorter max height, glow effect */
             .viz-bar {
-                box-shadow: 0 0 6px #ff2eb6, 0 0 10px rgba(255,46,182,0.35);
-                transition: height 0.08s ease;
+                width: 6px;
+                margin: 0 2px;
+                background: #ff2eb6;
+                border-radius: 2px;
+                box-shadow: 0 0 5px #ff2eb6, 0 0 8px rgba(255,46,182,0.3);
+                transition: height 0.07s ease;
             }
             .haptic { transition: transform 0.15s ease-out; }
             .haptic:active { transform: scale(0.92); }
@@ -36,7 +41,7 @@
 </head>
 <body class="bg-noir text-white min-h-screen flex flex-col items-center justify-center p-4">
     <div class="w-full max-w-sm aspect-[9/16] bezel rounded-xl bg-deepNoir relative overflow-hidden shadow-2xl flex flex-col">
-        <!-- Bigger Album Cover -->
+        <!-- ✅ BIGGER ALBUM COVER -->
         <div class="h-[220px] w-full bg-gray-900 relative">
             <img id="coverArt" alt="Album Cover" class="w-full h-full object-cover">
             <audio id="mainAudio" preload="auto" playsinline crossorigin="anonymous">
@@ -44,14 +49,15 @@
             
         </div>
 
-        <!-- 24‑bar visualizer + title, moved down -->
-        <div class="mt-auto mb-6 flex flex-col items-center gap-3">
-            <div id="visualizer" class="flex gap-0.5 items-end h-14 justify-center"></div>
+        <!-- ✅ VISUALIZER + TITLE MOVED DOWN — EXACT HEIGHT AS MARKED -->
+        <div class="mt-auto mb-5 flex flex-col items-center gap-2">
+            <!-- 24 bars, MAX HEIGHT = 35px (matches your marker) -->
+            <div id="visualizer" class="flex items-end justify-center h-[40px]"></div>
             <h2 id="trackTitle" class="text-base font-semibold tracking-wide text-center px-4 leading-tight">WKOR FM • NOIR SECTOR</h2>
             <p class="text-xs text-gray-300">Sovereign Audio Interface v1.0</p>
         </div>
 
-        <!-- Playback controls -->
+        <!-- ✅ PLAY BUTTON IN SAME CORRECT PLACE -->
         <div class="mb-10 flex justify-center items-center gap-8">
             <button id="prevBtn" class="text-white text-3xl hover:text-neonPink transition-colors">◀</button>
             <div class="w-28 h-28 rounded-full border-2 border-neonPink flex items-center justify-center haptic shadow-[0_0_15px_rgba(255,46,182,0.5)]">
@@ -61,6 +67,90 @@
         </div>
     </div>
 
-    <script src="assets/js/player.js"></script>
+    <!-- ✅ ALL JAVASCRIPT INCLUDED INSIDE — NO SEPARATE FILE NEEDED -->
+    <script>
+        const audioEl = document.getElementById('mainAudio');
+        const coverArt = document.getElementById('coverArt');
+        const trackTitle = document.getElementById('trackTitle');
+        const visualizer = document.getElementById('visualizer');
+        const playBtn = document.getElementById('playBtn');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+
+        const playlist = [
+            { title: "0 - THE SICK TEAM MINI ALUM MIX", src: "assets/media/0 - THE SICK TEAM MINI ALUM MIX - intro.mp3", cover: "assets/media/0 - THE SICK TEAM MINI ALUM MIX - cover art.png" },
+            { title: "1 - I CAN'T LET THIS FEELING GO (Original Mix)", src: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Original Mix).mp3", cover: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Cover Art).png" },
+            { title: "2 - THIS IS US - Version 1", src: "assets/media/2 - THIS IS US - THE SICK TEAM FT LEIX CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "3 - THIS IS US - Version 2", src: "assets/media/3 - THIS IS US - THE SICK TEAM FT LEIX CON 2.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "4 - ROCK THIS BEATS - Version 1", src: "assets/media/4 - ROCK THIS BEATS - THE SICK TEAM FT LEXI CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "5 - ROCK THIS BEATS - Version 2", src: "assets/media/5 - ROCK THIS BEATS - THE SICK TEAM FT LEXI CON 2.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "6 - I CAN'T LET THIS FEELING GO - Remix 1", src: "assets/media/6 - I CANT LET THIS FEELING GO - REMIX - THE SICK TEAM FT LEXI CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "7 - I CAN'T LET THIS FEELING GO - Remix 2", src: "assets/media/7 - I CANT LET THIS FEELING GO REMIX - THE SICK TEAM FT LEXI CON 2.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "8 - YOU FEEL THE EMOTION - Version 1", src: "assets/media/8 - YOU FEEL THE EMOTION - THE SICK TEAM FT LEXI CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "9 - YOU FEEL THE EMOTION - Version 2", src: "assets/media/9 - YOU FEEL THE EMOTION - THE SICK TEAM FT LEXI CON 2.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "10 - REACH OUT - Version 1", src: "assets/media/10 - REACH OUT - THE SICK TEAM FT LEXI CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
+            { title: "11 - REACH OUT - Version 2", src: "assets/media/11 - REACH OUT - THE SICK TEAM FT LEXI CON 2.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" }
+        ];
+
+        let currentTrack = 0, isPlaying = false, audioCtx, analyser, dataArray;
+
+        // ✅ Create exactly 24 bars, base height = 5px
+        for (let i = 0; i < 24; i++) {
+            const bar = document.createElement('div');
+            bar.className = "viz-bar";
+            bar.style.height = "5px";
+            visualizer.appendChild(bar);
+        }
+
+        function loadTrack(index) {
+            const track = playlist[index];
+            audioEl.src = track.src;
+            trackTitle.textContent = track.title;
+            coverArt.src = track.cover;
+            audioEl.load();
+        }
+
+        playBtn.addEventListener('click', async () => {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            if (audioCtx.state === 'suspended') await audioCtx.resume();
+            if (!analyser) {
+                const source = audioCtx.createMediaElementSource(audioEl);
+                analyser = audioCtx.createAnalyser();
+                analyser.fftSize = 128;
+                dataArray = new Uint8Array(analyser.frequencyBinCount);
+                source.connect(analyser); analyser.connect(audioCtx.destination); drawVisualizer();
+            }
+            isPlaying ? (audioEl.pause(), playBtn.textContent = "PLAY") : (audioEl.play().catch(e => console.log(e)), playBtn.textContent = "PAUSE");
+            isPlaying = !isPlaying;
+        });
+
+        prevBtn.addEventListener('click', () => {
+            currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying) audioEl.play().catch(() => {});
+        });
+
+        nextBtn.addEventListener('click', () => {
+            currentTrack = (currentTrack + 1) % playlist.length;
+            loadTrack(currentTrack);
+            if (isPlaying) audioEl.play().catch(() => {});
+        });
+
+        audioEl.addEventListener('ended', () => nextBtn.click());
+
+        // ✅ MAX HEIGHT = 35px — exactly as you marked, will never go higher
+        function drawVisualizer() {
+            requestAnimationFrame(drawVisualizer);
+            if (!analyser) return;
+            analyser.getByteFrequencyData(dataArray);
+            const bars = visualizer.children;
+            for (let i = 0; i < bars.length; i++) {
+                const height = Math.min(35, Math.max(5, dataArray[i] * 0.3));
+                bars[i].style.height = `${height}px`;
+            }
+        }
+
+        loadTrack(0);
+    </script>
 </body>
 </html>
