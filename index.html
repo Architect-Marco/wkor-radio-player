@@ -1,1 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WKOR FM | Noir Sector Sovereign Audio v1.0</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        noir: '#08080d',
+                        deepNoir: '#000000',
+                        neonPink: '#ff2eb6',
+                        whiteBezel: '#ffffff'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <style type="text/tailwindcss">
+        @layer utilities {
+            .bezel { border: 1.8px solid #ffffff; }
+            .viz-bar {
+                box-shadow: 0 0 8px #ff2eb6, 0 0 12px rgba(255, 46, 182, 0.4);
+                transition: height 0.1s ease;
+            }
+            .haptic {
+                transition: transform 0.15s ease-out;
+            }
+            .haptic:active {
+                transform: scale(0.92);
+            }
+        }
+    </style>
+</head>
+<body class="bg-noir text-white min-h-screen flex flex-col items-center justify-center p-4">
 
+    <!-- Main Player Frame -->
+    <div class="w-full max-w-sm aspect-[9/16] bezel rounded-xl bg-deepNoir relative overflow-hidden shadow-2xl">
+
+        <!-- 145px Cover Art Display -->
+        <div class="h-[145px] w-full bg-gray-900 relative">
+            <img id="coverArt" alt="Album Cover" class="w-full h-full object-cover">
+            <audio id="mainAudio" preload="auto" playsinline>
+                Your browser does not support the audio element.
+            
+        </div>
+
+        <!-- 12-Line Pink Neon Visualizer -->
+        <div class="h-24 flex justify-center items-center gap-1.5 mt-4">
+            <div id="visualizer" class="flex gap-1.5 items-end"></div>
+        </div>
+
+        <!-- Track Info -->
+        <div class="px-5 py-3 text-center">
+            <h2 id="trackTitle" class="text-base font-semibold tracking-wide">WKOR FM • NOIR SECTOR</h2>
+            <p class="text-xs text-gray-400 mt-1">Sovereign Audio Interface v1.0</p>
+        </div>
+
+        <!-- Control Buttons -->
+        <div class="flex justify-center items-center gap-6 mt-4">
+            <button id="prevBtn" class="text-white text-2xl">◀</button>
+            <div class="w-28 h-28 rounded-full border-2 border-neonPink flex items-center justify-center haptic">
+                <button id="playBtn" class="w-20 h-20 rounded-full bg-neonPink text-black font-bold text-lg tracking-wider">PLAY</button>
+            </div>
+            <button id="nextBtn" class="text-white text-2xl">▶</button>
+        </div>
+
+    </div>
+
+    <!-- ✅ Correct path to your player.js -->
+    <script src="assets/js/player.js"></script>
+</body>
+</html>
