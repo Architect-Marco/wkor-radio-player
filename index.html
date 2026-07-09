@@ -36,23 +36,25 @@
 </head>
 <body class="bg-noir text-white min-h-screen flex flex-col items-center justify-center p-4">
     <div class="w-full max-w-sm aspect-[9/16] bezel rounded-xl bg-deepNoir relative overflow-hidden shadow-2xl flex flex-col">
-        <!-- Album Cover -->
-        <div class="h-[160px] w-full bg-gray-900 relative">
+        <!-- ✅ BIGGER ALBUM COVER -->
+        <div class="h-[220px] w-full bg-gray-900 relative">
             <img id="coverArt" alt="Album Cover" class="w-full h-full object-cover">
             <audio id="mainAudio" preload="auto" playsinline crossorigin="anonymous">
                 Your browser does not support audio playback.
             
         </div>
 
-        <!-- Visualizer & Track Info - MOVED DOWN -->
-        <div class="mt-8 flex flex-col items-center">
-            <div id="visualizer" class="flex gap-1.5 items-end h-20 mb-6"></div>
-            <h2 id="trackTitle" class="text-lg font-semibold tracking-wide text-center px-3">WKOR FM • NOIR SECTOR</h2>
-            <p class="text-sm text-gray-300 mt-2">Sovereign Audio Interface v1.0</p>
+        <!-- ✅ VISUALIZER + TITLE MOVED DOWN, NEAR PLAY BUTTON -->
+        <div class="mt-auto mb-8 flex flex-col items-center gap-4">
+            <!-- LED Visualizer -->
+            <div id="visualizer" class="flex gap-1.5 items-end h-20"></div>
+            <!-- Track Info -->
+            <h2 id="trackTitle" class="text-lg font-semibold tracking-wide text-center px-4 leading-tight">WKOR FM • NOIR SECTOR</h2>
+            <p class="text-sm text-gray-300">Sovereign Audio Interface v1.0</p>
         </div>
 
-        <!-- Playback Controls - MOVED UP, LESS SPACE -->
-        <div class="mt-auto mb-10 flex justify-center items-center gap-8">
+        <!-- Playback Controls (kept in correct place) -->
+        <div class="mb-12 flex justify-center items-center gap-8">
             <button id="prevBtn" class="text-white text-3xl hover:text-neonPink transition-colors">◀</button>
             <div class="w-28 h-28 rounded-full border-2 border-neonPink flex items-center justify-center haptic shadow-[0_0_15px_rgba(255,46,182,0.5)]">
                 <button id="playBtn" class="w-20 h-20 rounded-full bg-neonPink text-black font-bold text-lg tracking-wider">PLAY</button>
