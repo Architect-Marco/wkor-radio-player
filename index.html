@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WKOR FM | Noir Sector Sovereign Audio v1.1</title>
+    <title>WKOR FM | Noir Sector Sovereign Audio v1.2</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
@@ -35,44 +35,56 @@
             }
             .haptic { transition: transform 0.15s ease-out; }
             .haptic:active { transform: scale(0.92); }
-            /* Smooth fade for the image bottom to blend into the UI */
+            /* Transition mask for the image base */
             .img-mask {
-                mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
-                -webkit-mask-image: linear-gradient(to bottom, black 90%, transparent 100%);
+                mask-image: linear-gradient(to bottom, black 95%, transparent 100%);
+                -webkit-mask-image: linear-gradient(to bottom, black 95%, transparent 100%);
+            }
+            /* Tactical side markers */
+            .side-marker {
+                position: absolute;
+                top: 400px; /* Aligned with the bottom of the cover */
+                width: 15px;
+                height: 2px;
+                background: white;
+                z-index: 50;
             }
         }
     </style>
 </head>
 <body class="bg-noir text-white min-h-screen flex flex-col items-center justify-center p-4">
-    <!-- Main Player Container: Proportions locked for Sovereign Standard -->
+    
+    <!-- Main Player Container -->
     <div class="w-full max-w-sm aspect-[9/16] bezel rounded-xl bg-deepNoir relative overflow-hidden shadow-2xl flex flex-col">
         
-        <!-- EXTENDED Cover Art: Increased from 220px to 320px to fix the "hang" -->
-        <div class="h-[320px] w-full bg-gray-900 relative overflow-hidden">
+        <!-- SIDE MARKERS (As per your visual instruction) -->
+        <div class="side-marker left-0"></div>
+        <div class="side-marker right-0"></div>
+
+        <!-- EXTENDED Cover Art: Increased to 400px to hit your markers -->
+        <div class="h-[400px] w-full bg-gray-900 relative overflow-hidden">
             <img id="coverArt" alt="Album Cover" class="w-full h-full object-cover img-mask">
-            <audio id="mainAudio" preload="auto" playsinline crossorigin="anonymous">
-                Your browser does not support audio playback.
-            </audio>
+            <audio id="mainAudio" preload="auto" playsinline crossorigin="anonymous"></audio>
         </div>
 
-        <!-- Metadata & Visualizer: Centered in the remaining space -->
-        <div class="flex-1 flex flex-col items-center justify-center gap-4 px-4">
-            <!-- 24 bars, max height 35px -->
-            <div id="visualizer" class="flex items-end justify-center h-[40px]"></div>
+        <!-- Metadata & Visualizer -->
+        <div class="flex-1 flex flex-col items-center justify-center gap-4 px-4 -mt-2">
+            <!-- 24 bars -->
+            <div id="visualizer" class="flex items-end justify-center h-[35px] mb-2"></div>
             
             <div class="text-center">
-                <h2 id="trackTitle" class="text-base font-bold tracking-wider leading-tight uppercase">WKOR FM • NOIR SECTOR</h2>
-                <p class="text-[10px] text-neonPink tracking-[0.2em] mt-1 opacity-80 uppercase">Sovereign Audio Interface v1.1</p>
+                <h2 id="trackTitle" class="text-[14px] font-bold tracking-widest leading-tight uppercase px-2">WKOR FM • NOIR SECTOR</h2>
+                <p class="text-[9px] text-neonPink tracking-[0.3em] mt-2 opacity-90 uppercase">Sovereign Audio Interface v1.2</p>
             </div>
         </div>
 
-        <!-- Tactical Controls: Lowered for thumb-access -->
-        <div class="mb-10 flex justify-center items-center gap-8">
-            <button id="prevBtn" class="text-white text-3xl hover:text-neonPink transition-colors haptic">◀</button>
-            <div class="w-24 h-24 rounded-full border-2 border-neonPink flex items-center justify-center haptic shadow-[0_0_20px_rgba(255,46,182,0.4)]">
-                <button id="playBtn" class="w-18 h-18 rounded-full bg-neonPink text-black font-black text-xs tracking-tighter flex items-center justify-center px-4 py-8">PLAY</button>
+        <!-- Tactical Controls -->
+        <div class="mb-8 flex justify-center items-center gap-8">
+            <button id="prevBtn" class="text-white text-2xl hover:text-neonPink transition-colors haptic">◀</button>
+            <div class="w-24 h-24 rounded-full border-2 border-neonPink flex items-center justify-center haptic shadow-[0_0_25px_rgba(255,46,182,0.4)]">
+                <button id="playBtn" class="w-20 h-20 rounded-full bg-neonPink text-black font-black text-[10px] tracking-widest flex items-center justify-center">PLAY</button>
             </div>
-            <button id="nextBtn" class="text-white text-3xl hover:text-neonPink transition-colors haptic">▶</button>
+            <button id="nextBtn" class="text-white text-2xl hover:text-neonPink transition-colors haptic">▶</button>
         </div>
     </div>
 
@@ -85,10 +97,9 @@
         const prevBtn = document.getElementById('prevBtn');
         const nextBtn = document.getElementById('nextBtn');
 
-        // FIXED: "ALUM" corrected to "ALBUM" for the Sick Team Mix
         const playlist = [
             { title: "0 - THE SICK TEAM MINI ALBUM MIX", src: "assets/media/0 - THE SICK TEAM MINI ALUM MIX - intro.mp3", cover: "assets/media/0 - THE SICK TEAM MINI ALUM MIX - cover art.png" },
-            { title: "1 - I CAN'T LET THIS FEELING GO (Original)", src: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Original Mix).mp3", cover: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Cover Art).png" },
+            { title: "1 - I CAN'T LET THIS FEELING GO", src: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Original Mix).mp3", cover: "assets/media/1 - I CANT LET THIS FEELING GO - FEAT LEXI CON (Cover Art).png" },
             { title: "2 - THIS IS US - Version 1", src: "assets/media/2 - THIS IS US - THE SICK TEAM FT LEIX CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
             { title: "3 - THIS IS US - Version 2", src: "assets/media/3 - THIS IS US - THE SICK TEAM FT LEIX CON 2.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
             { title: "4 - ROCK THIS BEATS - Version 1", src: "assets/media/4 - ROCK THIS BEATS - THE SICK TEAM FT LEXI CON 1.mp3", cover: "assets/media/2ND MINI ALBUM MAGAZINE - 2,3,4,5,6,7,8,9,10,11.png" },
