@@ -7,7 +7,7 @@ const playBtn = document.getElementById('playBtn');
 const prevBtn = document.getElementById('prevBtn');
 const nextBtn = document.getElementById('nextBtn');
 
-// ✅ EXACT paths matching your media folder
+// ✅ EXACT file names copied from your repo
 const playlist = [
     {
         title: "0 - THE SICK TEAM MINI ALUM MIX",
@@ -75,7 +75,7 @@ let currentTrack = 0;
 let isPlaying = false;
 let audioCtx, analyser, dataArray;
 
-// Build 12 visualizer bars
+// Build visualizer
 for (let i = 0; i < 12; i++) {
     const bar = document.createElement('div');
     bar.className = "viz-bar w-1.5 bg-neonPink rounded-sm";
@@ -89,15 +89,34 @@ function loadTrack(index) {
     trackTitle.textContent = track.title;
     coverArt.src = track.cover;
     audioEl.load();
+    console.log("Loaded:", track.src); // For debug
 }
 
 playBtn.addEventListener('click', async () => {
-    if (!audioCtx) await initAudioEngine();
+    if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    // Resume audio context (fixes browser block)
+    if (audioCtx.state === 'suspended') await audioCtx.resume();
+
+    if (!analyser) {
+        const source = audioCtx.createMediaElementSource(audioEl);
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 64;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+        source.connect(analyser);
+        analyser.connect(audioCtx.destination);
+        drawVisualizer();
+    }
+
     if (isPlaying) {
         audioEl.pause();
         playBtn.textContent = "PLAY";
     } else {
-        audioEl.play().catch(err => console.log("Play error:", err));
+        audioEl.play().catch(err => {
+            console.error("Play error:", err);
+            alert("Click play again to start sound");
+        });
         playBtn.textContent = "PAUSE";
     }
     isPlaying = !isPlaying;
@@ -106,29 +125,16 @@ playBtn.addEventListener('click', async () => {
 prevBtn.addEventListener('click', () => {
     currentTrack = (currentTrack - 1 + playlist.length) % playlist.length;
     loadTrack(currentTrack);
-    if (isPlaying) audioEl.play().catch(err => {});
+    if (isPlaying) audioEl.play().catch(() => {});
 });
 
 nextBtn.addEventListener('click', () => {
     currentTrack = (currentTrack + 1) % playlist.length;
     loadTrack(currentTrack);
-    if (isPlaying) audioEl.play().catch(err => {});
+    if (isPlaying) audioEl.play().catch(() => {});
 });
 
-audioEl.addEventListener('ended', () => {
-    nextBtn.click();
-});
-
-async function initAudioEngine() {
-    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-    const source = audioCtx.createMediaElementSource(audioEl);
-    analyser = audioCtx.createAnalyser();
-    analyser.fftSize = 64;
-    dataArray = new Uint8Array(analyser.frequencyBinCount);
-    source.connect(analyser);
-    analyser.connect(audioCtx.destination);
-    drawVisualizer();
-}
+audioEl.addEventListener('ended', () => nextBtn.click());
 
 function drawVisualizer() {
     requestAnimationFrame(drawVisualizer);
@@ -136,8 +142,7 @@ function drawVisualizer() {
     analyser.getByteFrequencyData(dataArray);
     const bars = visualizer.children;
     for (let i = 0; i < bars.length; i++) {
-        const height = Math.max(10, dataArray[i] * 0.7);
-        bars[i].style.height = `${height}px`;
+        bars[i].style.height = `${Math.max(10, dataArray[i] * 0.7)}px`;
     }
 }
 
